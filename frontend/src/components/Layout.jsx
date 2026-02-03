@@ -58,7 +58,7 @@ const Layout = () => {
                         <div className="user-avatar">{user?.full_name?.charAt(0) || 'U'}</div>
                         <div>
                             <div className="user-name">{user?.full_name}</div>
-                            <div className="user-role">@{user?.username}</div>
+                            <div className="user-role">{user?.role}</div>
                         </div>
                     </div>
                     <button className="logout-btn" onClick={handleLogout}>
