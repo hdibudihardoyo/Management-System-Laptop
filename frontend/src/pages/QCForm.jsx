@@ -1,6 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Html5Qrcode } from 'html5-qrcode';
 import { qcAPI, laptopAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
@@ -20,11 +19,9 @@ const QCForm = () => {
     const [qcRoom, setQcRoom] = useState('');
     const [qcLine, setQcLine] = useState('');
     const [qcTable, setQcTable] = useState('');
-    const [scanning, setScanning] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-    const scannerRef = useRef(null);
 
     useEffect(() => {
         if (editId) {
@@ -49,30 +46,6 @@ const QCForm = () => {
             setError('Gagal memuat data QC: ' + err.message);
             setStep('search');
         }
-    };
-
-    const startScanner = async () => {
-        setScanning(true);
-        try {
-            scannerRef.current = new Html5Qrcode('qr-reader');
-            await scannerRef.current.start({ facingMode: 'environment' }, { fps: 10, qrbox: { width: 250, height: 250 } }, onScanSuccess, () => { });
-        } catch (err) {
-            setError('Gagal mengakses kamera: ' + err.message);
-            setScanning(false);
-        }
-    };
-
-    const stopScanner = async () => {
-        if (scannerRef.current) {
-            await scannerRef.current.stop();
-            scannerRef.current = null;
-        }
-        setScanning(false);
-    };
-
-    const onScanSuccess = (decodedText) => {
-        setSerialNumber(decodedText);
-        stopScanner();
     };
 
     const searchLaptop = async () => {
@@ -173,48 +146,37 @@ const QCForm = () => {
 
             {step === 'search' && (
                 <div className="card">
-                    <div className="card-header"><h3 className="card-title">🔍 Cari / Scan Laptop</h3></div>
+                    <div className="card-header"><h3 className="card-title">Mulai Proses Quality Control</h3></div>
+                    <div className="search-box">
+                        <input type="text" className="form-input" value={serialNumber} onChange={(e) => setSerialNumber(e.target.value)} placeholder="Masukkan Serial Number" onKeyPress={(e) => e.key === 'Enter' && searchLaptop()} />
+                        <button className="btn btn-primary" onClick={searchLaptop} disabled={loading}>{loading ? '...' : '🔎 Cari'}</button>
+                    </div>
 
-                    {scanning ? (
-                        <div className="scanner-container">
-                            <div id="qr-reader" style={{ width: '100%' }}></div>
-                            <button className="btn btn-danger" style={{ width: '100%', marginTop: '1rem' }} onClick={stopScanner}>Stop Scanner</button>
+                    {laptop && (
+                        <div style={{ padding: '1rem', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', marginBottom: '1rem' }}>
+                            <p><strong>SN:</strong> {laptop.serial_number}</p>
+                            <p><strong>Model:</strong> {laptop.model || '-'}</p>
+                            <p><strong>Brand:</strong> {laptop.brand || '-'}</p>
+                            <p><strong>Status:</strong> <span className={`badge badge-${laptop.status}`}>{laptop.status}</span></p>
                         </div>
-                    ) : (
-                        <>
-                            <div className="search-box">
-                                <input type="text" className="form-input" value={serialNumber} onChange={(e) => setSerialNumber(e.target.value)} placeholder="Masukkan Serial Number" />
-                                <button className="btn btn-secondary" onClick={searchLaptop} disabled={loading}>{loading ? '...' : '🔎'}</button>
-                                <button className="btn btn-primary" onClick={startScanner}>📷 Scan</button>
-                            </div>
-
-                            {laptop && (
-                                <div style={{ padding: '1rem', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', marginBottom: '1rem' }}>
-                                    <p><strong>SN:</strong> {laptop.serial_number}</p>
-                                    <p><strong>Model:</strong> {laptop.model || '-'}</p>
-                                    <p><strong>Brand:</strong> {laptop.brand || '-'}</p>
-                                    <p><strong>Status:</strong> <span className={`badge badge-${laptop.status}`}>{laptop.status}</span></p>
-                                </div>
-                            )}
-
-                            {!laptop && serialNumber && (
-                                <div className="grid-2" style={{ marginBottom: '1rem' }}>
-                                    <div className="form-group" style={{ margin: 0 }}>
-                                        <label className="form-label">Model</label>
-                                        <input type="text" className="form-input" value={model} onChange={(e) => setModel(e.target.value)} placeholder="Contoh: ThinkPad L14" />
-                                    </div>
-                                    <div className="form-group" style={{ margin: 0 }}>
-                                        <label className="form-label">Brand</label>
-                                        <input type="text" className="form-input" value={brand} onChange={(e) => setBrand(e.target.value)} placeholder="Contoh: Lenovo" />
-                                    </div>
-                                </div>
-                            )}
-
-                            <button className="btn btn-primary" style={{ width: '100%' }} onClick={startQC} disabled={loading || !serialNumber}>
-                                {loading ? 'Memulai...' : '▶️ Mulai QC'}
-                            </button>
-                        </>
                     )}
+
+                    {!laptop && serialNumber && (
+                        <div className="grid-2" style={{ marginBottom: '1rem' }}>
+                            <div className="form-group" style={{ margin: 0 }}>
+                                <label className="form-label">Model</label>
+                                <input type="text" className="form-input" value={model} onChange={(e) => setModel(e.target.value)} placeholder="Contoh: ThinkPad L14" />
+                            </div>
+                            <div className="form-group" style={{ margin: 0 }}>
+                                <label className="form-label">Brand</label>
+                                <input type="text" className="form-input" value={brand} onChange={(e) => setBrand(e.target.value)} placeholder="Contoh: Lenovo" />
+                            </div>
+                        </div>
+                    )}
+
+                    <button className="btn btn-primary" style={{ width: '100%' }} onClick={startQC} disabled={loading || !serialNumber}>
+                        {loading ? 'Memulai...' : '▶️ Mulai QC'}
+                    </button>
                 </div>
             )}
 

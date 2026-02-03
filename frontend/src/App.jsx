@@ -28,12 +28,12 @@ function AppRoutes() {
             <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
                 <Route index element={<Navigate to="/dashboard" replace />} />
                 <Route path="dashboard" element={<Dashboard />} />
-                <Route path="qc" element={<ProtectedRoute roles={['admin', 'qc']}><QCForm /></ProtectedRoute>} />
-                <Route path="qc/edit/:id" element={<ProtectedRoute roles={['admin', 'qc']}><QCForm /></ProtectedRoute>} />
+                <Route path="qc" element={<ProtectedRoute roles={['leader', 'staff']}><QCForm /></ProtectedRoute>} />
+                <Route path="qc/edit/:id" element={<ProtectedRoute roles={['leader', 'staff']}><QCForm /></ProtectedRoute>} />
                 <Route path="laptops" element={<LaptopList />} />
                 <Route path="laptops/:id" element={<LaptopDetail />} />
                 <Route path="qc-history" element={<QCHistory />} />
-                <Route path="reports" element={<ProtectedRoute roles={['admin', 'qc']}><Reports /></ProtectedRoute>} />
+                <Route path="reports" element={<ProtectedRoute roles={['leader', 'staff']}><Reports /></ProtectedRoute>} />
             </Route>
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>

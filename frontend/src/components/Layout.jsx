@@ -23,10 +23,10 @@ const Layout = () => {
 
     const navItems = [
         { path: '/dashboard', icon: '📊', label: 'Dashboard' },
-        { path: '/qc', icon: '✅', label: 'Form QC', roles: ['leader', 'staff'] },
+        { path: '/qc', icon: '✅', label: 'Form QC' },
         { path: '/laptops', icon: '💻', label: 'Laptops' },
         { path: '/qc-history', icon: '📋', label: 'Riwayat QC' },
-        { path: '/reports', icon: '📈', label: 'Reports', roles: ['leader', 'staff'] }
+        { path: '/reports', icon: '📈', label: 'Reports' }
     ];
 
     const filteredNavItems = navItems.filter(item => !item.roles || item.roles.includes(user?.role));
@@ -35,8 +35,7 @@ const Layout = () => {
         <div className="app-layout">
             <aside className="sidebar">
                 <div className="sidebar-logo">
-                    <div className="sidebar-logo-icon">🔍</div>
-                    <h1>QC Laptop</h1>
+                    <h1 style={{ textAlign: 'center', color: 'white', fontWeight: 'bold', fontSize: '1rem' }}>Management System QC</h1>
                 </div>
 
                 <nav className="sidebar-nav">
@@ -62,7 +61,7 @@ const Layout = () => {
                         </div>
                     </div>
                     <button className="logout-btn" onClick={handleLogout}>
-                        <span>🚪</span> Logout
+                        Logout
                     </button>
                 </div>
             </aside>
