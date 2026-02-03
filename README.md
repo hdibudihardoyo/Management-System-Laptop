@@ -33,8 +33,8 @@ Sistem manajemen Quality Control untuk laptop dengan fitur lengkap untuk monitor
 ## 🚀 Instalasi
 
 ### Prerequisites
-- Node.js 18+
-- PostgreSQL 14+
+- Node.js 22+
+- PostgreSQL 18+
 
 ### 1. Clone Repository
 ```bash
@@ -153,13 +153,9 @@ Akses aplikasi di: http://localhost:5173
 - `GET /api/reports/export/pdf` - Export PDF
 - `GET /api/reports/export/excel` - Export Excel
 
-## 📝 License
-
-MIT License - feel free to use this project for your own purposes.
-
 ## 👨‍💻 Author
 
-**HDI Budihardoyo**
+**Hadi Budi Hardoyo**
 
 ---
 
